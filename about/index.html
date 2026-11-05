@@ -13,8 +13,10 @@
 <meta property="og:title" content="关于本站 - 工序查查站">
 <meta property="og:description" content="工序查查站：机加工工序与加工费参考站，数据口径与联系说明。">
 <meta property="og:url" content="https://gxccz.pages.dev/about/">
+<meta property="og:image" content="https://gxccz.pages.dev/og.png">
 <link rel="stylesheet" href="/assets/style.css">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<style>#fb-form{max-width:560px}#fb-form label{display:block;margin:12px 0 4px;font-size:14px}#fb-form input,#fb-form textarea{width:100%;padding:9px 10px;font-size:15px;border:1px solid var(--line);border-radius:8px;font-family:inherit;background:#fff}#fb-hp{display:none!important}#fb-form button{margin-top:14px;background:var(--accent);color:#fff;border:0;border-radius:8px;padding:10px 22px;font-size:15px;cursor:pointer}</style>
 </head>
 <body>
 <header class="site-header"><div class="in">
@@ -26,9 +28,41 @@
 <p>工序查查站（gxccz.cn）是一个机加工信息参考站，v1 只做机加工：工序库（每道工序一页：是什么、计价方式、参考费率区间、影响价格的因素）＋工时/机时费率计算器。</p>
 <h2>数据口径</h2>
 <p>本站费率与工时均为参考区间（2026 年 11 月据公开报价资料多源交叉整理），地区、设备、批量差异很大，实际价格以厂家正式报价为准。每道工序页都标注了计价口径与公式来源类型（行业流传公式、公开报价资料整理等）。本站不提供报价服务，不对任何按本站数据达成的交易负责。</p>
-<h2>联系</h2>
-<p>联系邮箱筹备中，上线后在本页公布。数据勘误与工序补充建议，欢迎届时来信。</p>
+<h2>反馈与联系</h2>
+<p>数据勘误、工序补充建议，或对本站的意见，都可以通过下面的表单告诉我们。邮箱只用于回复你的反馈，不作他用。</p>
+<form id="fb-form" method="post" action="#">
+<label for="fb-email">你的邮箱（用于回复）</label>
+<input id="fb-email" name="email" type="email" required placeholder="you@example.com">
+<label for="fb-topic">相关工序或主题（可空）</label>
+<input id="fb-topic" name="topic" type="text" placeholder="如：线切割">
+<label for="fb-msg">反馈内容</label>
+<textarea id="fb-msg" name="message" rows="5" required placeholder="写下你的勘误、建议或问题"></textarea>
+<input type="text" name="hp" id="fb-hp" autocomplete="off" tabindex="-1" aria-hidden="true">
+<button type="submit">提交反馈</button>
+<p class="meta" id="fb-status" role="status"></p>
+</form>
 </main>
+
+<script>
+(function(){
+var form=document.getElementById('fb-form');
+if(!form)return;
+form.addEventListener('submit',function(ev){
+ev.preventDefault();
+var st=document.getElementById('fb-status');
+var email=document.getElementById('fb-email').value.trim();
+var topic=document.getElementById('fb-topic').value.trim();
+var msg=document.getElementById('fb-msg').value.trim();
+if(!email||!msg){st.textContent='请填写邮箱和反馈内容。';return;}
+var note=(topic?('主题='+topic+' | '):'')+'内容='+msg;
+st.textContent='提交中...';
+fetch('https://lunasign.me/api/leads',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({site:'gxccz',email:email,source:'feedback',note:note.slice(0,480),hp:document.getElementById('fb-hp').value})})
+.then(function(r){return r.json();})
+.then(function(d){if(d&&d.ok){st.textContent='已收到，谢谢反馈。如需回复，我们会通过邮箱联系你。';form.reset();}else{st.textContent='提交失败，请稍后再试。';}})
+.catch(function(){st.textContent='提交失败，请稍后再试。';});
+});
+})();
+</script>
 <footer><div class="in">
 <p>工序查查站 — 机加工工序与加工费参考。本站费率与工时均为参考区间（2026 年 11 月据公开报价资料多源交叉整理），地区、设备、批量差异很大，实际价格以厂家正式报价为准。</p>
 <p><a href="/">工序库</a> · <a href="/calculator/">加工费计算器</a> · <a href="/about/">关于本站</a></p>

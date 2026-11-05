@@ -26,6 +26,7 @@ def head(title, desc, url, extra=""):
 <meta property="og:title" content="{html.escape(title)}">
 <meta property="og:description" content="{html.escape(desc)}">
 <meta property="og:url" content="{url}">
+<meta property="og:image" content="{D}/og.png">
 <link rel="stylesheet" href="/assets/style.css">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 {extra}</head>"""
@@ -61,6 +62,17 @@ def faq_ld(faqs):
                           "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in faqs]}
     return f'<script type="application/ld+json">{json.dumps(ld, ensure_ascii=False)}</script>\n'
 
+def crumb_ld(items):
+    # items: [(name, url_or_None), ...]，中间层级无独立页面时 url 传 None（只给 name）
+    els = []
+    for i, (name, u) in enumerate(items, 1):
+        el = {"@type": "ListItem", "position": i, "name": name}
+        if u:
+            el["item"] = u
+        els.append(el)
+    ld = {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": els}
+    return f'<script type="application/ld+json">{json.dumps(ld, ensure_ascii=False)}</script>\n'
+
 def write(path, content):
     p = os.path.join(ROOT, path)
     os.makedirs(os.path.dirname(p), exist_ok=True)
@@ -77,7 +89,7 @@ for p in PROCESSES:
     desc = p["lead"][:110]
     related = [q for q in PROCESSES if q["cat"] == p["cat"] and q["slug"] != p["slug"]][:3]
     rel = "".join(f'<li><a href="/gongxu/{q["slug"]}/">{html.escape(q["name"])}：{html.escape(q["kw"])}</a></li>' for q in related)
-    body = f"""{head(title, desc, url, faq_ld(p['faq']))}
+    body = f"""{head(title, desc, url, faq_ld(p['faq']) + crumb_ld([("工序库", D + "/"), (p['cat'], None), (p['name'], url)]))}
 <body>
 {header()}
 <main>
@@ -90,6 +102,7 @@ for p in PROCESSES:
 <p>{html.escape(p['pricing'])}</p>
 {table(p['rates'])}
 <div class="note">{SITE['data_note']}</div>
+<p class="meta">本页数据核验日期：{SITE['verified']}</p>
 <h2>影响价格的因素</h2>
 <ul>{''.join(f'<li>{html.escape(x)}</li>' for x in p['factors'])}</ul>
 {faq_html(p['faq'])}
@@ -105,7 +118,7 @@ for q in QA_PAGES:
     url = f"{D}/wenda/{q['slug']}/"
     title = f"{q['kw']} - 工序查查站"
     desc = q["lead"][:110]
-    body = f"""{head(title, desc, url, faq_ld(q['faq']))}
+    body = f"""{head(title, desc, url, faq_ld(q['faq']) + crumb_ld([("工序库", D + "/"), ("热门问答", None), (q['name'], url)]))}
 <body>
 {header()}
 <main>
@@ -115,6 +128,7 @@ for q in QA_PAGES:
 <p>{html.escape(q['body'])}</p>
 {table(q['rates'])}
 <div class="note">{SITE['data_note']}</div>
+<p class="meta">本页数据核验日期：{SITE['verified']}</p>
 {faq_html(q['faq'])}
 <p><a href="/calculator/">→ 用加工费计算器按你的参数算一遍</a></p>
 </main>
@@ -123,12 +137,19 @@ for q in QA_PAGES:
     URLS.append((f"/wenda/{q['slug']}/", q["kw"], "0.8"))
 
 # ---------- 计算器页 ----------
+calc_ld = {"@context": "https://schema.org", "@type": "WebApplication",
+           "name": "加工费计算器 - 工序查查站", "url": f"{D}/calculator/",
+           "applicationCategory": "BusinessApplication", "operatingSystem": "Web",
+           "browserRequirements": "Requires JavaScript",
+           "offers": {"@type": "Offer", "price": "0", "priceCurrency": "CNY"},
+           "description": "在线估算机加工费用：通用机加工（机时费率×工时）、线切割（面积法）、激光切割（按米）、注塑（吨位工缴费）四个模块，结果均为参考区间。"}
 rates_js = json.dumps([{"name": n, "lo": lo, "hi": hi} for n, lo, hi in CALC_RATES], ensure_ascii=False)
 ton_js = json.dumps([{"name": n, "lo": lo, "hi": hi} for n, lo, hi in CALC_TONNAGE], ensure_ascii=False)
 calc = head("加工费计算器（CNC/线切割/激光切割/注塑）- 工序查查站",
             "在线估算机加工费用：按机时费率×工时估 CNC 与常规切削，线切割面积法、激光切割按米、注塑吨位工缴费四个模块，结果均为参考区间。",
             f"{D}/calculator/",
-            '<style>.copybtn{margin-top:10px;border:1px solid var(--line);background:#fff;border-radius:8px;padding:7px 14px;font-size:14px;cursor:pointer}.copybtn:hover{border-color:var(--accent);color:var(--accent)}.err{color:#b3261e;font-weight:600}#toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:#222;color:#fff;padding:9px 18px;border-radius:999px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .25s;z-index:50}#toast.show{opacity:1}</style>\n')
+            '<style>.copybtn{margin-top:10px;border:1px solid var(--line);background:#fff;border-radius:8px;padding:7px 14px;font-size:14px;cursor:pointer}.copybtn:hover{border-color:var(--accent);color:var(--accent)}.err{color:#b3261e;font-weight:600}#toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:#222;color:#fff;padding:9px 18px;border-radius:999px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .25s;z-index:50}#toast.show{opacity:1}</style>\n'
+            + f'<script type="application/ld+json">{json.dumps(calc_ld, ensure_ascii=False)}</script>\n')
 calc += """
 <body>
 """ + header() + """
@@ -280,6 +301,10 @@ home += f"""
 <h1>机加工工序库：每道工序的加工费怎么算</h1>
 <p class="lede">工序查查站只做一件事：把机加工每道工序的计价方式讲清——用什么公式、机时费率大概多少、哪些因素让价格翻倍。所有费率只给参考区间并标注口径，不编造统一标准价。</p>
 <p><a class="cta" href="/calculator/">打开加工费计算器（费率×工时 / 线切割面积法 / 激光按米 / 注塑吨位）</a></p>
+<h2>能查什么</h2>
+<p>本站收录机加工常用工序的计价方式，每道工序一页：用什么公式算（机时费率×工时、按切割面积、按米、按件等）、参考费率区间是多少、哪些因素会让价格上下浮动（材料、厚度、批量、精度要求等）。拿着自己的参数，还可以用加工费计算器当场估一遍四个常用场景：通用机加工、线切割、激光切割、注塑。</p>
+<h2>数据口径</h2>
+<p>本站所有费率与工时都是<strong>参考区间</strong>，来自 2026 年 11 月对公开报价资料的多源交叉整理，不是任何一家厂家的报价，更不是统一标准价——机加工本来就没有全国统一价。地区、设备新旧、订单批量都会让实际价格偏离区间，正式下单请以厂家按图报价为准。</p>
 {''.join(cats)}
 <h2>热门问答</h2>
 <div class="grid">{qa_cards}</div>
@@ -289,8 +314,31 @@ home += f"""
 write("index.html", home)
 
 # ---------- 关于页 ----------
+FB_SCRIPT = """
+<script>
+(function(){
+var form=document.getElementById('fb-form');
+if(!form)return;
+form.addEventListener('submit',function(ev){
+ev.preventDefault();
+var st=document.getElementById('fb-status');
+var email=document.getElementById('fb-email').value.trim();
+var topic=document.getElementById('fb-topic').value.trim();
+var msg=document.getElementById('fb-msg').value.trim();
+if(!email||!msg){st.textContent='请填写邮箱和反馈内容。';return;}
+var note=(topic?('主题='+topic+' | '):'')+'内容='+msg;
+st.textContent='提交中...';
+fetch('https://lunasign.me/api/leads',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({site:'gxccz',email:email,source:'feedback',note:note.slice(0,480),hp:document.getElementById('fb-hp').value})})
+.then(function(r){return r.json();})
+.then(function(d){if(d&&d.ok){st.textContent='已收到，谢谢反馈。如需回复，我们会通过邮箱联系你。';form.reset();}else{st.textContent='提交失败，请稍后再试。';}})
+.catch(function(){st.textContent='提交失败，请稍后再试。';});
+});
+})();
+</script>
+"""
 about = head("关于本站 - 工序查查站", "工序查查站：机加工工序与加工费参考站，数据口径与联系说明。",
-             f"{D}/about/")
+             f"{D}/about/",
+             '<style>#fb-form{max-width:560px}#fb-form label{display:block;margin:12px 0 4px;font-size:14px}#fb-form input,#fb-form textarea{width:100%;padding:9px 10px;font-size:15px;border:1px solid var(--line);border-radius:8px;font-family:inherit;background:#fff}#fb-hp{display:none!important}#fb-form button{margin-top:14px;background:var(--accent);color:#fff;border:0;border-radius:8px;padding:10px 22px;font-size:15px;cursor:pointer}</style>\n')
 about += f"""
 <body>
 {header()}
@@ -299,10 +347,21 @@ about += f"""
 <p>工序查查站（gxccz.cn）是一个机加工信息参考站，v1 只做机加工：工序库（每道工序一页：是什么、计价方式、参考费率区间、影响价格的因素）＋工时/机时费率计算器。</p>
 <h2>数据口径</h2>
 <p>{SITE['data_note']}每道工序页都标注了计价口径与公式来源类型（行业流传公式、公开报价资料整理等）。本站不提供报价服务，不对任何按本站数据达成的交易负责。</p>
-<h2>联系</h2>
-<p>联系邮箱筹备中，上线后在本页公布。数据勘误与工序补充建议，欢迎届时来信。</p>
+<h2>反馈与联系</h2>
+<p>数据勘误、工序补充建议，或对本站的意见，都可以通过下面的表单告诉我们。邮箱只用于回复你的反馈，不作他用。</p>
+<form id="fb-form" method="post" action="#">
+<label for="fb-email">你的邮箱（用于回复）</label>
+<input id="fb-email" name="email" type="email" required placeholder="you@example.com">
+<label for="fb-topic">相关工序或主题（可空）</label>
+<input id="fb-topic" name="topic" type="text" placeholder="如：线切割">
+<label for="fb-msg">反馈内容</label>
+<textarea id="fb-msg" name="message" rows="5" required placeholder="写下你的勘误、建议或问题"></textarea>
+<input type="text" name="hp" id="fb-hp" autocomplete="off" tabindex="-1" aria-hidden="true">
+<button type="submit">提交反馈</button>
+<p class="meta" id="fb-status" role="status"></p>
+</form>
 </main>
-{footer()}"""
+""" + FB_SCRIPT + footer()
 write("about/index.html", about)
 URLS.append(("/about/", "关于本站", "0.3"))
 
