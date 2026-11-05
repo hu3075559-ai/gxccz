@@ -15,6 +15,7 @@
 <meta property="og:url" content="https://gxccz.pages.dev/calculator/">
 <link rel="stylesheet" href="/assets/style.css">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<style>.copybtn{margin-top:10px;border:1px solid var(--line);background:#fff;border-radius:8px;padding:7px 14px;font-size:14px;cursor:pointer}.copybtn:hover{border-color:var(--accent);color:var(--accent)}.err{color:#b3261e;font-weight:600}#toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:#222;color:#fff;padding:9px 18px;border-radius:999px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .25s;z-index:50}#toast.show{opacity:1}</style>
 </head>
 <body>
 <header class="site-header"><div class="in">
@@ -38,6 +39,7 @@
 <div class="row"><div><label>材料费（元/件，可空）</label><input id="g-mat" type="number" value="0" min="0"></div>
 <div><label>数量（件）</label><input id="g-qty" type="number" value="10" min="1"></div></div>
 <div class="out" id="g-out"></div>
+<button type="button" class="copybtn" data-m="gen">复制结果链接</button>
 <p class="meta">公式：单件加工费＝机时费率（元/小时）×工时（分钟）÷60；区间由费率上下限分别计算。费率口径见各工序页。</p>
 </div>
 
@@ -45,6 +47,7 @@
 <div class="row"><div><label>切割轨迹总长（mm）</label><input id="w-len" type="number" value="500" min="0"></div>
 <div><label>材料厚度（mm）</label><input id="w-th" type="number" value="20" min="0"></div></div>
 <div class="out" id="w-out"></div>
+<button type="button" class="copybtn" data-m="wire">复制结果链接</button>
 <p class="meta">公式：截面面积＝轨迹长×厚度；费用≈（面积÷1200）×5 元（快走丝流传口径）。慢走丝与多次切割请按工时法，见慢走丝页。</p>
 </div>
 
@@ -54,7 +57,8 @@
 <div class="row"><div><label>切割总长度（米）</label><input id="l-len" type="number" value="10" min="0"></div>
 <div><label>穿孔数（个，穿孔费按 1 元/个估）</label><input id="l-hole" type="number" value="20" min="0"></div></div>
 <div class="out" id="l-out"></div>
-<p class="meta">公式：每米价＝板厚×系数；总价＝每米价×总长＋穿孔费。小单有最低消费。</p>
+<button type="button" class="copybtn" data-m="laser">复制结果链接</button>
+<p class="meta">公式：每米价＝板厚×材质系数；总价＝每米价×总长＋穿孔费。材质系数（碳钢×1.5、不锈钢约×2.5、铝约×4）为业内流传经验口径，2026 年 11 月据公开报价资料整理，实际以厂家报价为准。小单有最低消费。</p>
 </div>
 
 <div class="calc pane" id="pane-inj">
@@ -63,6 +67,7 @@
 <div class="row"><div><label>模穴数</label><input id="i-cav" type="number" value="2" min="1"></div>
 <div><label>原料费（元/件，可空）</label><input id="i-mat" type="number" value="0" min="0"></div></div>
 <div class="out" id="i-out"></div>
+<button type="button" class="copybtn" data-m="inj">复制结果链接</button>
 <p class="meta">公式：单件工缴费＝机台费率×周期÷3600÷穴数。此处不含模具费（开模单独计）。</p>
 </div>
 
@@ -73,29 +78,47 @@
 <li><a href="/gongxu/gongshi-dinge/">机加工工时定额怎么算：工时构成别漏宽放与准备时间</a></li>
 <li><a href="/wenda/cnc-yige-lingjian-duoshao/">CNC 加工一个零件多少钱：为什么批量决定单价</a></li>
 </ul>
+<div id="toast" role="status"></div>
 </main>
 <footer><div class="in">
-<p>工序查查站 gxccz.cn — 机加工工序与加工费参考。本站费率与工时均为参考区间（2026 年 11 月据公开报价资料多源交叉整理），地区、设备、批量差异很大，实际价格以厂家正式报价为准。</p>
+<p>工序查查站 — 机加工工序与加工费参考。本站费率与工时均为参考区间（2026 年 11 月据公开报价资料多源交叉整理），地区、设备、批量差异很大，实际价格以厂家正式报价为准。</p>
 <p><a href="/">工序库</a> · <a href="/calculator/">加工费计算器</a> · <a href="/about/">关于本站</a></p>
 </div></footer>
 </body></html>
 <script>
 var RATES=[{"name": "普通车床", "lo": 40, "hi": 70}, {"name": "数控车床", "lo": 60, "hi": 120}, {"name": "普通铣床", "lo": 40, "hi": 70}, {"name": "数控铣床", "lo": 70, "hi": 130}, {"name": "加工中心（三轴）", "lo": 80, "hi": 150}, {"name": "加工中心（四轴）", "lo": 150, "hi": 250}, {"name": "加工中心（五轴）", "lo": 200, "hi": 450}, {"name": "平面磨床", "lo": 50, "hi": 90}, {"name": "外圆磨床", "lo": 60, "hi": 110}, {"name": "快走丝线切割", "lo": 30, "hi": 60}, {"name": "慢走丝线切割", "lo": 150, "hi": 300}, {"name": "电火花（EDM）", "lo": 90, "hi": 200}, {"name": "氩弧焊", "lo": 80, "hi": 150}, {"name": "二保焊", "lo": 60, "hi": 110}], TONS=[{"name": "80T", "lo": 40, "hi": 60}, {"name": "120T", "lo": 65, "hi": 85}, {"name": "180T", "lo": 90, "hi": 120}, {"name": "250T", "lo": 120, "hi": 160}, {"name": "400T", "lo": 180, "hi": 260}];
-function $(i){{return document.getElementById(i)}}
-function money(x){{return (Math.round(x*10)/10).toLocaleString('zh-CN')}}
-var gd=$('g-dev'); RATES.forEach(function(r,i){{var o=document.createElement('option');o.value=i;o.textContent=r.name+'（'+r.lo+'–'+r.hi+' 元/时）';gd.appendChild(o)}});
-var it=$('i-ton'); TONS.forEach(function(r,i){{var o=document.createElement('option');o.value=i;o.textContent=r.name+'（'+r.lo+'–'+r.hi+' 元/时）';it.appendChild(o)}});
-function gen(){{var r=RATES[+gd.value],m=+$('g-min').value||0,mat=+$('g-mat').value||0,q=Math.max(1,+$('g-qty').value||1);
+function $(i){return document.getElementById(i)}
+function money(x){return (Math.round(x*10)/10).toLocaleString('zh-CN')}
+var gd=$('g-dev'); RATES.forEach(function(r,i){var o=document.createElement('option');o.value=i;o.textContent=r.name+'（'+r.lo+'–'+r.hi+' 元/时）';gd.appendChild(o)});
+var it=$('i-ton'); TONS.forEach(function(r,i){var o=document.createElement('option');o.value=i;o.textContent=r.name+'（'+r.lo+'–'+r.hi+' 元/时）';it.appendChild(o)});
+// 取值校验：req=必填正数（带上限），opt=可空非负数（空按 0）；非法一律返回 NaN，由各模块给出提示
+function req(id,max){var v=$(id).value.trim(); if(v==='')return NaN; var n=Number(v); if(!isFinite(n)||n<=0||n>(max||1000000))return NaN; return n}
+function opt(id,max){var v=$(id).value.trim(); if(v==='')return 0; var n=Number(v); if(!isFinite(n)||n<0||n>(max||100000000))return NaN; return n}
+function err(out,msg){$(out).innerHTML='<span class="err">'+msg+'</span>'}
+function gen(){var r=RATES[+gd.value],m=req('g-min',100000),mat=opt('g-mat'),q=req('g-qty',1000000);
+ if(isNaN(m))return err('g-out','请先填写有效的单件工时（分钟，需大于 0）');
+ if(isNaN(q)||Math.floor(q)!==q)return err('g-out','请先填写有效的数量（件，正整数）');
+ if(isNaN(mat))return err('g-out','材料费请填写 0 或正数（可留空按 0 算）');
  var lo=r.lo*m/60+mat, hi=r.hi*m/60+mat;
- $('g-out').innerHTML='单件参考：<b>'+money(lo)+' – '+money(hi)+' 元</b>（其中加工费 '+money(r.lo*m/60)+' – '+money(r.hi*m/60)+' 元）<br>共 '+q+' 件合计约：<b>'+money(lo*q)+' – '+money(hi*q)+' 元</b>';}}
-function wire(){{var a=(+$('w-len').value||0)*(+$('w-th').value||0), fee=a/1200*5;
- $('w-out').innerHTML='截面面积 '+money(a)+' mm²，按面积法参考加工费约 <b>'+money(fee)+' 元</b>（小单多有 30–50 元最低消费）';}}
-function laser(){{var th=+$('l-th').value||0,k=+$('l-mat').value,len=+$('l-len').value||0,h=+$('l-hole').value||0;
+ $('g-out').innerHTML='单件参考：<b>'+money(lo)+' – '+money(hi)+' 元</b>（其中加工费 '+money(r.lo*m/60)+' – '+money(r.hi*m/60)+' 元）<br>共 '+q+' 件合计约：<b>'+money(lo*q)+' – '+money(hi*q)+' 元</b>';}
+function wire(){var len=req('w-len'),th=req('w-th');
+ if(isNaN(len))return err('w-out','请先填写有效的切割轨迹总长（mm，需大于 0）');
+ if(isNaN(th))return err('w-out','请先填写有效的材料厚度（mm，需大于 0）');
+ var a=len*th, fee=a/1200*5;
+ $('w-out').innerHTML='截面面积 '+money(a)+' mm²，按面积法参考加工费约 <b>'+money(fee)+' 元</b>（小单多有 30–50 元最低消费）';}
+function laser(){var th=req('l-th',1000),k=+$('l-mat').value,len=req('l-len',100000),h=opt('l-hole',1000000);
+ if(isNaN(th))return err('l-out','请先填写有效的板厚（mm，需大于 0）');
+ if(isNaN(len))return err('l-out','请先填写有效的切割总长度（米，需大于 0）');
+ if(isNaN(h))return err('l-out','穿孔数请填写 0 或正数（没有穿孔填 0）');
  var per=th*k, tot=per*len+h*1;
- $('l-out').innerHTML='每米参考价约 <b>'+money(per)+' 元/米</b>，总价约 <b>'+money(tot)+' 元</b>（含穿孔费估 '+money(h)+' 元）';}}
-function inj(){{var r=TONS[+it.value],cyc=+$('i-cyc').value||0,cav=Math.max(1,+$('i-cav').value||1),mat=+$('i-mat').value||0;
+ $('l-out').innerHTML='每米参考价约 <b>'+money(per)+' 元/米</b>，总价约 <b>'+money(tot)+' 元</b>（含穿孔费估 '+money(h)+' 元）';}
+function inj(){var r=TONS[+it.value],cyc=req('i-cyc',36000),cav=req('i-cav',1000),mat=opt('i-mat');
+ if(isNaN(cyc))return err('i-out','请先填写有效的成型周期（秒，需大于 0）');
+ if(isNaN(cav)||Math.floor(cav)!==cav)return err('i-out','请先填写有效的模穴数（正整数）');
+ if(isNaN(mat))return err('i-out','原料费请填写 0 或正数（可留空按 0 算）');
  var lo=r.lo*cyc/3600/cav+mat, hi=r.hi*cyc/3600/cav+mat;
- $('i-out').innerHTML='单件参考：<b>'+money(lo)+' – '+money(hi)+' 元</b>（工缴费 '+money(r.lo*cyc/3600/cav)+' – '+money(r.hi*cyc/3600/cav)+' 元，不含模具费）';}}
+ $('i-out').innerHTML='单件参考：<b>'+money(lo)+' – '+money(hi)+' 元</b>（工缴费 '+money(r.lo*cyc/3600/cav)+' – '+money(r.hi*cyc/3600/cav)+' 元，不含模具费）';}
+var FIELDS={gen:['g-dev','g-min','g-mat','g-qty'],wire:['w-len','w-th'],laser:['l-th','l-mat','l-len','l-hole'],inj:['i-ton','i-cyc','i-cav','i-mat']};
 ['g-dev','g-min','g-mat','g-qty'].forEach(function(i){document.getElementById(i).addEventListener('input',gen)});
 ['w-len','w-th'].forEach(function(i){document.getElementById(i).addEventListener('input',wire)});
 ['l-th','l-mat','l-len','l-hole'].forEach(function(i){document.getElementById(i).addEventListener('input',laser)});
@@ -104,6 +127,22 @@ document.querySelectorAll('.tabs button').forEach(function(b){b.addEventListener
  document.querySelectorAll('.tabs button').forEach(function(x){x.classList.remove('on')}); b.classList.add('on');
  document.querySelectorAll('.pane').forEach(function(x){x.classList.remove('on')});
  document.getElementById('pane-'+b.dataset.t).classList.add('on');});});
+// 带参数打开：还原各模块输入，并切到 t 指定的模块；末尾统一重算，结果即出
+(function(){var qs=new URLSearchParams(location.search);
+ Object.keys(FIELDS).forEach(function(mod){FIELDS[mod].forEach(function(id){var v=qs.get(id); if(v===null)return; var el=$(id);
+  if(el.tagName==='SELECT'){for(var j=0;j<el.options.length;j++){if(el.options[j].value===v){el.value=v;break}}} else {el.value=v}})});
+ var t=qs.get('t'); if(t&&FIELDS[t]){document.querySelectorAll('.tabs button').forEach(function(b){if(b.dataset.t===t)b.click()});}
+})();
+// 复制结果链接：把该模块全部输入编码进 URL，打开即还原同组输入与结果
+function toast(msg){var t=$('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(function(){t.classList.remove('show')},1800)}
+document.querySelectorAll('.copybtn').forEach(function(b){b.addEventListener('click',function(){
+ var mod=b.dataset.m, parts=['t='+mod];
+ FIELDS[mod].forEach(function(id){parts.push(id+'='+encodeURIComponent($(id).value))});
+ var url=location.origin+location.pathname+'?'+parts.join('&');
+ function done(){toast('结果链接已复制，发给同事打开即是这个结果')}
+ function fallback(){var ta=document.createElement('textarea'); ta.value=url; document.body.appendChild(ta); ta.select(); try{document.execCommand('copy'); done()}catch(e){toast('复制失败，请手动复制地址栏链接')} document.body.removeChild(ta)}
+ if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(url).then(done,fallback)}else{fallback()}
+})});
 gen(); wire(); laser(); inj();
 </script>
 </body></html>
