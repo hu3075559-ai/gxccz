@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="google-site-verification" content="G97sFvVAFn4qMJCTupV0JXGVb_nc5mUWkDNsn0YLFvk" />
+<meta name="msvalidate.01" content="9B4026C98FB641D53056F9D959BE029E" />
+<title>加工费计算器（CNC/线切割/激光切割/注塑）- 工序查查站</title>
+<meta name="description" content="在线估算机加工费用：按机时费率×工时估 CNC 与常规切削，线切割面积法、激光切割按米、注塑吨位工缴费四个模块，结果均为参考区间。">
+<link rel="canonical" href="https://gxccz.cn/calculator/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="工序查查站">
+<meta property="og:title" content="加工费计算器（CNC/线切割/激光切割/注塑）- 工序查查站">
+<meta property="og:description" content="在线估算机加工费用：按机时费率×工时估 CNC 与常规切削，线切割面积法、激光切割按米、注塑吨位工缴费四个模块，结果均为参考区间。">
+<meta property="og:url" content="https://gxccz.cn/calculator/">
+<link rel="stylesheet" href="/assets/style.css">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+</head>
+<body>
+<header class="site-header"><div class="in">
+<a class="brand" href="/">工序查查站<small>机加工工序库 · 加工费参考</small></a>
+<nav><a href="/">工序库</a><a href="/calculator/">加工费计算器</a><a href="/wenda/baojia-jisuan-fangfa/">报价计算方法</a><a href="/about/">关于本站</a></nav>
+</div></header>
+<main>
+<p class="crumb"><a href="/">工序库</a> / 加工费计算器</p>
+<h1>加工费计算器</h1>
+<p class="lede">四个常用估算模块：通用机加工（费率×工时）、线切割（面积法）、激光切割（按米）、注塑（吨位工缴费）。全部按参考区间出数——实际价格以厂家按图报价为准。</p>
+<div class="tabs">
+<button class="on" data-t="gen">通用机加工</button>
+<button data-t="wire">线切割</button>
+<button data-t="laser">激光切割</button>
+<button data-t="inj">注塑</button>
+</div>
+
+<div class="calc pane on" id="pane-gen">
+<div class="row"><div><label>设备类型（费率区间内置）</label><select id="g-dev"></select></div>
+<div><label>单件工时（分钟）</label><input id="g-min" type="number" value="30" min="0"></div></div>
+<div class="row"><div><label>材料费（元/件，可空）</label><input id="g-mat" type="number" value="0" min="0"></div>
+<div><label>数量（件）</label><input id="g-qty" type="number" value="10" min="1"></div></div>
+<div class="out" id="g-out"></div>
+<p class="meta">公式：单件加工费＝机时费率（元/小时）×工时（分钟）÷60；区间由费率上下限分别计算。费率口径见各工序页。</p>
+</div>
+
+<div class="calc pane" id="pane-wire">
+<div class="row"><div><label>切割轨迹总长（mm）</label><input id="w-len" type="number" value="500" min="0"></div>
+<div><label>材料厚度（mm）</label><input id="w-th" type="number" value="20" min="0"></div></div>
+<div class="out" id="w-out"></div>
+<p class="meta">公式：截面面积＝轨迹长×厚度；费用≈（面积÷1200）×5 元（快走丝流传口径）。慢走丝与多次切割请按工时法，见慢走丝页。</p>
+</div>
+
+<div class="calc pane" id="pane-laser">
+<div class="row"><div><label>板厚（mm）</label><input id="l-th" type="number" value="3" min="0" step="0.5"></div>
+<div><label>材质</label><select id="l-mat"><option value="1.5">碳钢（×1.5）</option><option value="3.75">不锈钢（约×2.5）</option><option value="6">铝板（约×4）</option></select></div></div>
+<div class="row"><div><label>切割总长度（米）</label><input id="l-len" type="number" value="10" min="0"></div>
+<div><label>穿孔数（个，穿孔费按 1 元/个估）</label><input id="l-hole" type="number" value="20" min="0"></div></div>
+<div class="out" id="l-out"></div>
+<p class="meta">公式：每米价＝板厚×系数；总价＝每米价×总长＋穿孔费。小单有最低消费。</p>
+</div>
+
+<div class="calc pane" id="pane-inj">
+<div class="row"><div><label>机台吨位</label><select id="i-ton"></select></div>
+<div><label>成型周期（秒）</label><input id="i-cyc" type="number" value="30" min="1"></div></div>
+<div class="row"><div><label>模穴数</label><input id="i-cav" type="number" value="2" min="1"></div>
+<div><label>原料费（元/件，可空）</label><input id="i-mat" type="number" value="0" min="0"></div></div>
+<div class="out" id="i-out"></div>
+<p class="meta">公式：单件工缴费＝机台费率×周期÷3600÷穴数。此处不含模具费（开模单独计）。</p>
+</div>
+
+<div class="note">计算结果为参考估算，实际以厂家报价为准。费率区间为 2026 年 11 月据公开报价资料多源交叉整理，地区、设备新旧、批量差异很大。</div>
+<h2>算之前先看</h2>
+<ul>
+<li><a href="/wenda/baojia-jisuan-fangfa/">机械加工报价计算方法：材料＋工时＋费率的完整构成</a></li>
+<li><a href="/gongxu/gongshi-dinge/">机加工工时定额怎么算：工时构成别漏宽放与准备时间</a></li>
+<li><a href="/wenda/cnc-yige-lingjian-duoshao/">CNC 加工一个零件多少钱：为什么批量决定单价</a></li>
+</ul>
+</main>
+<footer><div class="in">
+<p>工序查查站 gxccz.cn — 机加工工序与加工费参考。本站费率与工时均为参考区间（2026 年 11 月据公开报价资料多源交叉整理），地区、设备、批量差异很大，实际价格以厂家正式报价为准。</p>
+<p><a href="/">工序库</a> · <a href="/calculator/">加工费计算器</a> · <a href="/about/">关于本站</a></p>
+</div></footer>
+</body></html>
+<script>
+var RATES=[{"name": "普通车床", "lo": 40, "hi": 70}, {"name": "数控车床", "lo": 60, "hi": 120}, {"name": "普通铣床", "lo": 40, "hi": 70}, {"name": "数控铣床", "lo": 70, "hi": 130}, {"name": "加工中心（三轴）", "lo": 80, "hi": 150}, {"name": "加工中心（四轴）", "lo": 150, "hi": 250}, {"name": "加工中心（五轴）", "lo": 200, "hi": 450}, {"name": "平面磨床", "lo": 50, "hi": 90}, {"name": "外圆磨床", "lo": 60, "hi": 110}, {"name": "快走丝线切割", "lo": 30, "hi": 60}, {"name": "慢走丝线切割", "lo": 150, "hi": 300}, {"name": "电火花（EDM）", "lo": 90, "hi": 200}, {"name": "氩弧焊", "lo": 80, "hi": 150}, {"name": "二保焊", "lo": 60, "hi": 110}], TONS=[{"name": "80T", "lo": 40, "hi": 60}, {"name": "120T", "lo": 65, "hi": 85}, {"name": "180T", "lo": 90, "hi": 120}, {"name": "250T", "lo": 120, "hi": 160}, {"name": "400T", "lo": 180, "hi": 260}];
+function $(i){{return document.getElementById(i)}}
+function money(x){{return (Math.round(x*10)/10).toLocaleString('zh-CN')}}
+var gd=$('g-dev'); RATES.forEach(function(r,i){{var o=document.createElement('option');o.value=i;o.textContent=r.name+'（'+r.lo+'–'+r.hi+' 元/时）';gd.appendChild(o)}});
+var it=$('i-ton'); TONS.forEach(function(r,i){{var o=document.createElement('option');o.value=i;o.textContent=r.name+'（'+r.lo+'–'+r.hi+' 元/时）';it.appendChild(o)}});
+function gen(){{var r=RATES[+gd.value],m=+$('g-min').value||0,mat=+$('g-mat').value||0,q=Math.max(1,+$('g-qty').value||1);
+ var lo=r.lo*m/60+mat, hi=r.hi*m/60+mat;
+ $('g-out').innerHTML='单件参考：<b>'+money(lo)+' – '+money(hi)+' 元</b>（其中加工费 '+money(r.lo*m/60)+' – '+money(r.hi*m/60)+' 元）<br>共 '+q+' 件合计约：<b>'+money(lo*q)+' – '+money(hi*q)+' 元</b>';}}
+function wire(){{var a=(+$('w-len').value||0)*(+$('w-th').value||0), fee=a/1200*5;
+ $('w-out').innerHTML='截面面积 '+money(a)+' mm²，按面积法参考加工费约 <b>'+money(fee)+' 元</b>（小单多有 30–50 元最低消费）';}}
+function laser(){{var th=+$('l-th').value||0,k=+$('l-mat').value,len=+$('l-len').value||0,h=+$('l-hole').value||0;
+ var per=th*k, tot=per*len+h*1;
+ $('l-out').innerHTML='每米参考价约 <b>'+money(per)+' 元/米</b>，总价约 <b>'+money(tot)+' 元</b>（含穿孔费估 '+money(h)+' 元）';}}
+function inj(){{var r=TONS[+it.value],cyc=+$('i-cyc').value||0,cav=Math.max(1,+$('i-cav').value||1),mat=+$('i-mat').value||0;
+ var lo=r.lo*cyc/3600/cav+mat, hi=r.hi*cyc/3600/cav+mat;
+ $('i-out').innerHTML='单件参考：<b>'+money(lo)+' – '+money(hi)+' 元</b>（工缴费 '+money(r.lo*cyc/3600/cav)+' – '+money(r.hi*cyc/3600/cav)+' 元，不含模具费）';}}
+['g-dev','g-min','g-mat','g-qty'].forEach(function(i){document.getElementById(i).addEventListener('input',gen)});
+['w-len','w-th'].forEach(function(i){document.getElementById(i).addEventListener('input',wire)});
+['l-th','l-mat','l-len','l-hole'].forEach(function(i){document.getElementById(i).addEventListener('input',laser)});
+['i-ton','i-cyc','i-cav','i-mat'].forEach(function(i){document.getElementById(i).addEventListener('input',inj)});
+document.querySelectorAll('.tabs button').forEach(function(b){b.addEventListener('click',function(){
+ document.querySelectorAll('.tabs button').forEach(function(x){x.classList.remove('on')}); b.classList.add('on');
+ document.querySelectorAll('.pane').forEach(function(x){x.classList.remove('on')});
+ document.getElementById('pane-'+b.dataset.t).classList.add('on');});});
+gen(); wire(); laser(); inj();
+</script>
+</body></html>

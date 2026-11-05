@@ -1,0 +1,38 @@
+# 工序查查站（gxccz.cn）
+
+机加工工序与加工费参考站：每道工序的计价公式、参考费率区间、影响因素与在线计算器。费率均为参考区间，非统一标准价。
+
+## 主要页面
+- 首页/工序库: https://gxccz.cn/
+- 加工费计算器: https://gxccz.cn/calculator/
+
+## 工序页
+- 线切割（快走丝）（线切割加工费怎么算）: https://gxccz.cn/gongxu/xianqiege/
+- 慢走丝线切割（慢走丝加工费怎么算）: https://gxccz.cn/gongxu/manzousi/
+- 激光切割（激光切割加工费怎么算）: https://gxccz.cn/gongxu/jiguang-qiege/
+- 数控折弯（折弯加工费怎么算）: https://gxccz.cn/gongxu/zhewan/
+- 注塑成型（注塑加工费怎么算）: https://gxccz.cn/gongxu/zhusu/
+- 钻孔（钻孔加工收费标准）: https://gxccz.cn/gongxu/zuankong/
+- 攻丝（攻牙）（攻丝加工收费标准）: https://gxccz.cn/gongxu/gongsi/
+- 车床加工（车床加工费怎么算）: https://gxccz.cn/gongxu/chechuang/
+- 铣床加工（铣床加工费怎么算）: https://gxccz.cn/gongxu/xichuang/
+- 磨床加工（磨床加工费怎么算）: https://gxccz.cn/gongxu/mochuang/
+- 冲压（冲压加工费怎么算）: https://gxccz.cn/gongxu/chongya/
+- 焊接（焊接加工费怎么算）: https://gxccz.cn/gongxu/hanjie/
+- 电镀（电镀加工费多少钱）: https://gxccz.cn/gongxu/diandu/
+- 喷涂（喷粉/喷漆）（喷涂加工费怎么算）: https://gxccz.cn/gongxu/pentu/
+- 加工中心机时费率（加工中心多少钱一小时）: https://gxccz.cn/gongxu/jiagong-zhongxin/
+- 数控车床机时费率（数控车床机时费率）: https://gxccz.cn/gongxu/shukong-chechuang/
+- 机加工工时定额（机加工工时定额怎么算）: https://gxccz.cn/gongxu/gongshi-dinge/
+- 车削工时计算（车削工时计算）: https://gxccz.cn/gongxu/chexue-gongshi/
+- 阳极氧化（阳极氧化工艺流程）: https://gxccz.cn/gongxu/yangji-yanghua/
+- 发黑处理（发黑处理工艺）: https://gxccz.cn/gongxu/fahei/
+- 热处理（热处理工艺流程）: https://gxccz.cn/gongxu/rechuli/
+- 电火花加工（EDM）（电火花加工是什么）: https://gxccz.cn/gongxu/dianhuohua/
+- 线切割加工工艺（线切割加工工艺）: https://gxccz.cn/gongxu/xianqiege-gongyi/
+
+## 问答页
+- 激光切割多少钱一米（激光切割多少钱一米）: https://gxccz.cn/wenda/jiguang-duoshao-yimi/
+- 攻丝多少钱一个孔（攻丝多少钱一个孔）: https://gxccz.cn/wenda/gongsi-duoshao-yige-kong/
+- CNC 加工一个零件多少钱（CNC加工一个零件多少钱）: https://gxccz.cn/wenda/cnc-yige-lingjian-duoshao/
+- 机械加工报价计算方法（机械加工报价计算方法）: https://gxccz.cn/wenda/baojia-jisuan-fangfa/
