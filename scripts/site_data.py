@@ -5,7 +5,7 @@
 
 SITE = {
     "name": "工序查查站",
-    "domain": "https://gxccz.cn",
+    "domain": "https://gxccz.pages.dev",
     "tagline": "机加工工序库 · 加工费怎么算 · 机时费率参考",
     "data_note": "本站费率与工时均为参考区间（2026 年 11 月据公开报价资料多源交叉整理），地区、设备、批量差异很大，实际价格以厂家正式报价为准。",
 }

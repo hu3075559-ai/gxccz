@@ -17,3 +17,10 @@ Built 2026-11-05（用户当日拍板建站）。数据源：2026-11-04 关键�
 5. 观察期 4–6 周（自正式域名解析起算更准）：看 GSC/百度收录与展现，无量止损、域名恢复挂售。
 
 部署触发：2026-11-05 首推在建项目之前，本次小提交用于触发 Pages 首次构建。
+
+## 2026-11-05 基准域名切换为 pages.dev 试运行（用户当日拍板）
+
+- 用户改定：先用 https://gxccz.pages.dev 跑收录观察期，gxccz.cn 自定义域名后补（zone/NS 仍待用户在 CF 后台处理，见待办 1）。
+- 基准 URL 单一配置点：`scripts/site_data.py` 的 `SITE["domain"]`，build.py 全部 canonical/og/sitemap/robots/llms/JSON-LD 都由它生成。本次已由 https://gxccz.cn 改为 https://gxccz.pages.dev 并重建推送。
+- 日后绑定 gxccz.cn 自定义域名时：把该值改回 https://gxccz.cn → 跑 `python3 scripts/build.py` → 推送，即完成切回，不要逐文件改。
+- 页面页脚与关于页里的「工序查查站 gxccz.cn」为品牌文字提及，非 URL 引用，试运行期保留不动。
