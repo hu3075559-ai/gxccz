@@ -9,6 +9,16 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 D = SITE["domain"]
 GSC = "G97sFvVAFn4qMJCTupV0JXGVb_nc5mUWkDNsn0YLFvk"
 BING = "9B4026C98FB641D53056F9D959BE029E"
+GA_ID = "G-36PLK4JM29"
+GA_SNIPPET = """<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=__GA_ID__"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', '__GA_ID__');
+</script>
+""".replace("__GA_ID__", GA_ID)
 
 def head(title, desc, url, extra=""):
     return f"""<!DOCTYPE html>
@@ -18,7 +28,7 @@ def head(title, desc, url, extra=""):
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="google-site-verification" content="{GSC}" />
 <meta name="msvalidate.01" content="{BING}" />
-<title>{html.escape(title)}</title>
+{GA_SNIPPET}<title>{html.escape(title)}</title>
 <meta name="description" content="{html.escape(desc)}">
 <link rel="canonical" href="{url}">
 <meta property="og:type" content="website">
