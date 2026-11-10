@@ -36,3 +36,4 @@
 - 攻丝多少钱一个孔（攻丝多少钱一个孔）: https://gxccz.pages.dev/wenda/gongsi-duoshao-yige-kong/
 - CNC 加工一个零件多少钱（CNC加工一个零件多少钱）: https://gxccz.pages.dev/wenda/cnc-yige-lingjian-duoshao/
 - 机械加工报价计算方法（机械加工报价计算方法）: https://gxccz.pages.dev/wenda/baojia-jisuan-fangfa/
+- 线切割加工费按面积算还是按小时算（线切割加工费按面积算还是按小时算）: https://gxccz.pages.dev/wenda/xianqiege-an-mianji-haishi-an-xiaoshi/
