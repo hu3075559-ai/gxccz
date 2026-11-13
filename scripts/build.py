@@ -51,6 +51,7 @@ def footer():
     return f"""<footer><div class="in">
 <p>工序查查站 — 机加工工序与加工费参考。{SITE['data_note']}</p>
 <p><a href="/">工序库</a> · <a href="/calculator/">加工费计算器</a> · <a href="/about/">关于本站</a></p>
+<p>更多工具：<a href="https://gxccz.com/">gxccz 工具导航</a> · <a href="https://coin-value.pages.dev/">钱币估价</a></p>
 </div></footer>
 </body></html>"""
 
@@ -61,6 +62,20 @@ def table(rows):
         out.append("<tr>" + "".join(f"<{tag}>{html.escape(c)}</{tag}>" for c in r) + "</tr>")
     out.append("</table>")
     return "\n".join(out)
+
+def sections_html(sections):
+    out = []
+    for h, paras in sections:
+        out.append(f"<h2>{html.escape(h)}</h2>")
+        for p in paras:
+            out.append(f"<p>{html.escape(p)}</p>")
+    return "\n".join(out)
+
+def more_html(more):
+    if not more:
+        return ""
+    items = "".join(f'<li><a href="{html.escape(u)}">{html.escape(t)}</a></li>' for t, u in more)
+    return f"<h2>相关阅读</h2>\n<ul>{items}</ul>"
 
 def faq_html(faqs):
     items = "".join(f"<h3>{html.escape(q)}</h3><p>{html.escape(a)}</p>" for q, a in faqs)
@@ -126,6 +141,11 @@ for p in PROCESSES:
 # ---------- 问答页 ----------
 for q in QA_PAGES:
     url = f"{D}/wenda/{q['slug']}/"
+    qa_extra = sections_html(q.get('sections', []))
+    if q.get('more'):
+        qa_extra += ("\n" if qa_extra else "") + more_html(q.get('more', []))
+    if qa_extra:
+        qa_extra = "\n" + qa_extra
     title = f"{q['kw']} - 工序查查站"
     desc = q["lead"][:110]
     body = f"""{head(title, desc, url, faq_ld(q['faq']) + crumb_ld([("工序库", D + "/"), ("热门问答", None), (q['name'], url)]))}
@@ -136,7 +156,7 @@ for q in QA_PAGES:
 <h1>{html.escape(q['kw'])}</h1>
 <p class="lede">{html.escape(q['lead'])}</p>
 <p>{html.escape(q['body'])}</p>
-{table(q['rates'])}
+{table(q['rates'])}{qa_extra}
 <div class="note">{SITE['data_note']}</div>
 <p class="meta">本页数据核验日期：{SITE['verified']}</p>
 {faq_html(q['faq'])}
