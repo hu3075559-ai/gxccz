@@ -88,13 +88,15 @@ def faq_ld(faqs):
     return f'<script type="application/ld+json">{json.dumps(ld, ensure_ascii=False)}</script>\n'
 
 def crumb_ld(items):
-    # items: [(name, url_or_None), ...]，中间层级无独立页面时 url 传 None（只给 name）
+    # Google 要求 BreadcrumbList 的每个 ListItem 都带 item（URL），缺了就报
+    # “未填写字段 item”结构化数据问题。中间层级（工序分类/热门问答）没有独立
+    # 落地页，编不出真实 URL，所以直接从 JSON-LD 里去掉这一级（只保留有 URL
+    # 的首页和当前页），不要发无 item 的 ListItem。页面上可见的面包屑文字不动。
     els = []
-    for i, (name, u) in enumerate(items, 1):
-        el = {"@type": "ListItem", "position": i, "name": name}
-        if u:
-            el["item"] = u
-        els.append(el)
+    for name, u in items:
+        if not u:
+            continue
+        els.append({"@type": "ListItem", "position": len(els) + 1, "name": name, "item": u})
     ld = {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": els}
     return f'<script type="application/ld+json">{json.dumps(ld, ensure_ascii=False)}</script>\n'
 
@@ -129,7 +131,7 @@ for p in PROCESSES:
 <div class="note">{SITE['data_note']}</div>
 <p class="meta">本页数据核验日期：{SITE['verified']}</p>
 <h2>影响价格的因素</h2>
-<ul>{''.join(f'<li>{html.escape(x)}</li>' for x in p['factors'])}</ul>
+<ul>{''.join(f'<li>{html.escape(x)}</li>' for x in p['factors'])}</ul>{more_html(p.get('more', []))}
 {faq_html(p['faq'])}
 <h2>相关工序</h2>
 <ul>{rel}<li><a href="/calculator/">加工费计算器：按费率×工时快速估价</a></li></ul>
