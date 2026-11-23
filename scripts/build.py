@@ -7,6 +7,11 @@ from site_data import SITE, PROCESSES, QA_PAGES, CALC_RATES, CALC_TONNAGE
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 D = SITE["domain"]
+# canonical/og:url 归属主站：本站由 hub Worker 以 /gongxu 前缀代理到 gxccz.com，
+# 工序页在主站是双层 /gongxu/gongxu/<slug>/。C 只用于 canonical、og:url 与面包屑
+# 当前页/首页条目；sitemap、robots、llms 仍用 D（hub 的 sitemap 合并按 origin
+# 前缀匹配 D，改 D 会让工序页从主站 sitemap 里掉出去），不要合并这两个变量。
+C = "https://gxccz.com/gongxu"
 GSC = "G97sFvVAFn4qMJCTupV0JXGVb_nc5mUWkDNsn0YLFvk"
 BING = "9B4026C98FB641D53056F9D959BE029E"
 GA_ID = "G-36PLK4JM29"
@@ -112,12 +117,12 @@ URLS = [("/", "工序查查站 - 机加工工序库与加工费计算器", "1.0"
 
 # ---------- 工序页 ----------
 for p in PROCESSES:
-    url = f"{D}/gongxu/{p['slug']}/"
+    url = f"{C}/gongxu/{p['slug']}/"
     title = f"{p['kw']} - 工序查查站"
     desc = p["lead"][:110]
     related = [q for q in PROCESSES if q["cat"] == p["cat"] and q["slug"] != p["slug"]][:3]
     rel = "".join(f'<li><a href="/gongxu/{q["slug"]}/">{html.escape(q["name"])}：{html.escape(q["kw"])}</a></li>' for q in related)
-    body = f"""{head(title, desc, url, faq_ld(p['faq']) + crumb_ld([("工序库", D + "/"), (p['cat'], None), (p['name'], url)]))}
+    body = f"""{head(title, desc, url, faq_ld(p['faq']) + crumb_ld([("工序库", C + "/"), (p['cat'], None), (p['name'], url)]))}
 <body>
 {header()}
 <main>
@@ -143,7 +148,7 @@ for p in PROCESSES:
 
 # ---------- 问答页 ----------
 for q in QA_PAGES:
-    url = f"{D}/wenda/{q['slug']}/"
+    url = f"{C}/wenda/{q['slug']}/"
     qa_extra = sections_html(q.get('sections', []))
     if q.get('more'):
         qa_extra += ("\n" if qa_extra else "") + more_html(q.get('more', []))
@@ -151,7 +156,7 @@ for q in QA_PAGES:
         qa_extra = "\n" + qa_extra
     title = f"{q['kw']} - 工序查查站"
     desc = q["lead"][:110]
-    body = f"""{head(title, desc, url, faq_ld(q['faq']) + crumb_ld([("工序库", D + "/"), ("热门问答", None), (q['name'], url)]))}
+    body = f"""{head(title, desc, url, faq_ld(q['faq']) + crumb_ld([("工序库", C + "/"), ("热门问答", None), (q['name'], url)]))}
 <body>
 {header()}
 <main>
@@ -180,7 +185,7 @@ rates_js = json.dumps([{"name": n, "lo": lo, "hi": hi} for n, lo, hi in CALC_RAT
 ton_js = json.dumps([{"name": n, "lo": lo, "hi": hi} for n, lo, hi in CALC_TONNAGE], ensure_ascii=False)
 calc = head("加工费计算器（CNC/线切割/激光切割/注塑）- 工序查查站",
             "在线估算机加工费用：按机时费率×工时估 CNC 与常规切削，线切割面积法、激光切割按米、注塑吨位工缴费四个模块，结果均为参考区间。",
-            f"{D}/calculator/",
+            f"{C}/calculator/",
             '<style>.copybtn{margin-top:10px;border:1px solid var(--line);background:#fff;border-radius:8px;padding:7px 14px;font-size:14px;cursor:pointer}.copybtn:hover{border-color:var(--accent);color:var(--accent)}.err{color:#b3261e;font-weight:600}#toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:#222;color:#fff;padding:9px 18px;border-radius:999px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .25s;z-index:50}#toast.show{opacity:1}</style>\n'
             + f'<script type="application/ld+json">{json.dumps(calc_ld, ensure_ascii=False)}</script>\n')
 calc += """
@@ -326,7 +331,7 @@ home_ld = {"@context": "https://schema.org", "@type": "WebSite", "name": "工序
            "description": "机加工工序库与加工费计算器：单工序加工费怎么算、机时费率参考区间、工时定额构成。"}
 home = head("工序查查站 - 机加工工序库｜加工费怎么算｜机时费率参考",
             "机加工每道工序的加工费怎么算：线切割、激光切割、折弯、注塑、钻孔、攻丝等工序的计价公式、参考费率区间与在线计算器。",
-            D + "/", f'<script type="application/ld+json">{json.dumps(home_ld, ensure_ascii=False)}</script>\n')
+            C + "/", f'<script type="application/ld+json">{json.dumps(home_ld, ensure_ascii=False)}</script>\n')
 home += f"""
 <body>
 {header()}
@@ -370,7 +375,7 @@ fetch('https://lunasign.me/api/leads',{method:'POST',headers:{'Content-Type':'ap
 </script>
 """
 about = head("关于本站 - 工序查查站", "工序查查站：机加工工序与加工费参考站，数据口径与联系说明。",
-             f"{D}/about/",
+             f"{C}/about/",
              '<style>#fb-form{max-width:560px}#fb-form label{display:block;margin:12px 0 4px;font-size:14px}#fb-form input,#fb-form textarea{width:100%;padding:9px 10px;font-size:15px;border:1px solid var(--line);border-radius:8px;font-family:inherit;background:#fff}#fb-hp{display:none!important}#fb-form button{margin-top:14px;background:var(--accent);color:#fff;border:0;border-radius:8px;padding:10px 22px;font-size:15px;cursor:pointer}</style>\n')
 about += f"""
 <body>
@@ -399,7 +404,7 @@ write("about/index.html", about)
 URLS.append(("/about/", "关于本站", "0.3"))
 
 # ---------- 404 / robots / sitemap / llms ----------
-write("404.html", head("页面不存在 - 工序查查站", "页面不存在", D + "/404.html") + f"""
+write("404.html", head("页面不存在 - 工序查查站", "页面不存在", C + "/404.html") + f"""
 <body>{header()}<main><h1>页面不存在</h1><p>回到<a href="/">工序库首页</a>，或打开<a href="/calculator/">加工费计算器</a>。</p></main>{footer()}""")
 write("robots.txt", f"User-agent: *\nAllow: /\n\nSitemap: {D}/sitemap.xml\n")
 sm = ['<?xml version="1.0" encoding="UTF-8"?>', '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']

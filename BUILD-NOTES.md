@@ -24,3 +24,9 @@ Built 2026-11-05（用户当日拍板建站）。数据源：2026-11-04 关键�
 - 基准 URL 单一配置点：`scripts/site_data.py` 的 `SITE["domain"]`，build.py 全部 canonical/og/sitemap/robots/llms/JSON-LD 都由它生成。本次已由 https://gxccz.cn 改为 https://gxccz.pages.dev 并重建推送。
 - 日后绑定 gxccz.cn 自定义域名时：把该值改回 https://gxccz.cn → 跑 `python3 scripts/build.py` → 推送，即完成切回，不要逐文件改。
 - 页面页脚与关于页里的「工序查查站 gxccz.cn」为品牌文字提及，非 URL 引用，试运行期保留不动。
+
+## 2026-11-23 canonical 归属主站（用户当日拍板）
+
+- 背景：GSC 来信 gxccz.pages.dev 自 2026-11-21 起有搜索展示，与主站 gxccz.com/gongxu/（hub Worker 代理同一份内容）两边 canonical 各指自己、重复收录分流。
+- 处理：build.py 新增常量 C = "https://gxccz.com/gongxu"，仅 canonical、og:url 与面包屑 JSON-LD 的首页/当前页条目改用 C 生成（工序页主站为双层 /gongxu/gongxu/<slug>/）；SITE["domain"]（D）保持 pages.dev 不动——sitemap/robots/llms 仍用 D，因为 hub Worker 的 sitemap 合并按 origin 前缀匹配 D 的 loc，改 D 会让工序页从主站 sitemap 掉出去。主站侧 Worker 的 canonical 改写对新值自动变成 no-op，主站输出不变。
+- 不要把 C 改回 D，也不要把 D 改成 gxccz.com/gongxu（两个变量分工不同）。
